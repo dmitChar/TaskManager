@@ -2,6 +2,7 @@ QT += quick
 
 SOURCES += \
         main.cpp \
+        taskfilter.cpp \
         taskmodel.cpp
 
 resources.files = main.qml 
@@ -21,4 +22,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     task.h \
+    taskfilter.h \
     taskmodel.h
