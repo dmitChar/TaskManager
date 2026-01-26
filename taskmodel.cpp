@@ -65,7 +65,7 @@ void TaskModel::moveTask(int id, const QString &newStatus)
     }
 }
 
-QList<Task> &TaskModel::getTasks()
+const QList<Task> &TaskModel::getTasks() const
 {
     return tasks;
 }

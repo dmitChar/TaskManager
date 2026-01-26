@@ -29,7 +29,7 @@ public:
     void addTask(const Task &newTask);
     void moveTask(int id, const QString &newStatus);
 
-    QList<Task> &getTasks();
+    const QList<Task> &getTasks() const;
 private:
     QList<Task> tasks;
 signals:
