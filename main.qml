@@ -1,8 +1,9 @@
 import QtQuick
 
 Window {
-    width: 640
-    height: 480
+    width: 1200
+    height: 700
     visible: true
-    title: qsTr("Hello World")
+    title: "Task Manager"
+
 }
