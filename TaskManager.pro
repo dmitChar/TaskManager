@@ -8,7 +8,8 @@ SOURCES += \
 
 resources.files = main.qml 
 resources.prefix = /$${TARGET}
-RESOURCES += resources
+RESOURCES += resources \
+    TaskManager.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -26,3 +27,10 @@ HEADERS += \
     taskcontroller.h \
     taskfilter.h \
     taskmodel.h
+
+DISTFILES += \
+    Board.qml \
+    BoardColumn.qml \
+    StatsBar.qml \
+    TaskCard.qml \
+    TopBar.qml

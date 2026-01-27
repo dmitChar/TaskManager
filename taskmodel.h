@@ -27,7 +27,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     void addTask(const Task &newTask);
-    void moveTask(int id, const QString &newStatus);
+    void moveTask(int id, const QString &newStatus, int sourceTargetIndex);
 
     const QList<Task> &getTasks() const;
 private:

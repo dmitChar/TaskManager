@@ -1,13 +1,18 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+
+#include "taskcontroller.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
     QQmlApplicationEngine engine;
 
-    //qmlRegisterType<Count>("count", 1, 0, "Cou");
-    //const QUrl url("qrc:/firstProgramm/main.qml"); // ссылка на файл qml
-    //engine.load(url);   // загружаем файл qml
+    TaskController controller;
+    engine.rootContext()->setContextProperty("taskController", &controller);
+    const QUrl url("qrc:/qml/main.qml");
+    engine.load(url);
     return app.exec();
 }

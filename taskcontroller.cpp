@@ -8,16 +8,51 @@
 TaskController::TaskController(QObject *parent)
     : QObject{parent}
 {
-    m_model.addTask({1,"Учить Qt","QML + C++","backlog",{"study"},1,QDateTime::currentDateTime(),{}});
-    m_model.addTask({2,"Проект","Kanban app","progress",{"work","urgent"},2,QDateTime::currentDateTime(),{}});
+    m_model.addTask({1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
+    m_model.addTask({2, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
+    m_model.addTask({3, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
+    m_model.addTask({4, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
+    m_model.addTask({5, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
 
-    for (const QString &s: {"backlog","progress","done"})
+    //Фильтры для каждого статуса
+    for (const QString &s: {"backlog","progress","review", "done"})
     {
         auto *proxy = new TaskFilter(this);
         proxy->setSourceModel(&m_model);
         proxy->setStatus(s);
         m_columns[s] = proxy;
     }
+
+}
+
+void TaskController::setPrioritySort(const QString &status, int sortOrder)
+{
+    TaskFilter *filter = m_columns.value(status);
+    if (filter)
+    {
+        filter->setPrioritySort(static_cast<TaskFilter::PrioritySortOrder>(sortOrder));
+        qDebug() << "Priority sort set for" << status << "to" << sortOrder;
+    }
+    else qWarning() << "Filter not found for status:" << status;
+}
+
+int TaskController::getPrioritySort(const QString &status)
+{
+    TaskFilter *filter = m_columns.value(status);
+    if (filter)
+    {
+        return static_cast<int>(filter->prioritySort());
+    }
+    return 0;
+}
+
+int TaskController::proxyToSourceIndex(TaskFilter *filter, int proxyIndex)
+{
+    if (!filter || proxyIndex < 0)
+        return -1;
+    QModelIndex proxyIdx = filter->index(proxyIndex, 0);
+    QModelIndex sourceIdx = filter->mapToSource(proxyIdx);
+    return sourceIdx.row();
 
 }
 
@@ -49,7 +84,20 @@ void TaskController::setStatusFilter(const QString &status)
 
 void TaskController::moveTask(int id, const QString &newStatus)
 {
-    m_model.moveTask(id, newStatus);
+    qDebug() << "TaskController::moveTask: id=" << id << "newStatus=" << newStatus;
+
+    // Всегда вставляем в начало (индекс 0 в proxy модели)
+    TaskFilter* targetFilter = m_columns.value(newStatus);
+    int sourceTargetIndex = -1;
+
+    if (targetFilter && targetFilter->rowCount() > 0) {
+        // Конвертируем proxy индекс 0 в source индекс
+        sourceTargetIndex = proxyToSourceIndex(targetFilter, 0);
+        qDebug() << "Will insert at beginning (proxy 0 = source" << sourceTargetIndex << ")";
+    }
+
+    // Вызываем метод модели
+    m_model.moveTask(id, newStatus, sourceTargetIndex);
     emit statsChanged();
 }
 
@@ -60,7 +108,6 @@ void TaskController::exportJson()
     {
         QJsonObject obj;
         obj["title"] = t.title;
-
     }
 }
 
