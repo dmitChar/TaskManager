@@ -37,6 +37,7 @@ void TaskController::addTask(const QString &title, const QString &description, c
     task.priority = priority;
     task.createdAt = QDateTime::currentDateTime();
     task.status = "backlog";
+    qDebug() << "Добавлена задача" << id;
 
     m_model.addTask(task);
 }

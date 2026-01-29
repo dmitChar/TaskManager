@@ -6,6 +6,7 @@ Rectangle {
     id: column
     required property string title
     required property string status
+
     radius: 10
     color: dropArea.containsDrag ? "#d5dbdb" : "#ecf0f1"
     border.color: dropArea.containsDrag ? "#3498db" : "transparent"

@@ -43,6 +43,10 @@ Rectangle
         AddTaskDialog
         {
             id: addTaskDialog
+            onTaskAccepted:
+            {
+                taskController.addTask(title, description,tags, priority)
+            }
         }
     }
 

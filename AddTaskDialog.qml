@@ -10,6 +10,8 @@ Dialog
     standardButtons: "NoButton"
     width: 400
 
+    signal taskAccepted(string title, string priority, string description, var tags)
+
     ColumnLayout
     {
         anchors.fill: parent
@@ -30,7 +32,7 @@ Dialog
                 { text: "High priority", value: 1 },
                 { text: "Medium priority", value: 2 },
                 { text: "Low priority", value: 3 }
-            ]
+                ]
             textRole: "text"
             valueRole: "value"
             currentIndex: 1
@@ -91,13 +93,28 @@ Dialog
             {
                 id: cancelBtn
                 text: "Отмена"
-                onClicked: dialog.close()
+                onClicked:
+                {
+                    titleField.clear()
+                    descriptionField.clear()
+                    resetTags()
+                    dialog.close()
+                }
             }
             Button
             {
                 id: acceptBtn
                 text: "Добавить"
                 enabled: titleField.text.length > 0
+                onClicked:
+                {
+                    dialog.taskAccepted(titleField.text, priorityBox.currentIndex + 1, descriptionField.text, selectedTags())
+                    console.log("Priority index:", priorityBox.currentIndex)
+                    titleField.clear()
+                    descriptionField.clear()
+                    resetTags()
+                    dialog.close()
+                }
             }
         }
     }
@@ -123,6 +140,15 @@ Dialog
                 result.push(tagsModel.get(i).name)
         }
         return result
+    }
+
+    function resetTags()
+    {
+        for (let i = 0; i < tagsModel.count; ++i)
+        {
+            if (tagsModel.get(i).selected)
+                tagsModel.get(i).selected = false
+        }
     }
 }
 

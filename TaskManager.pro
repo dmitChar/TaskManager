@@ -1,4 +1,4 @@
-QT += quick
+QT += quick sql
 
 SOURCES += \
         main.cpp \
