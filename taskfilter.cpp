@@ -51,7 +51,7 @@ void TaskFilter::setPrioritySort(PrioritySortOrder order)
         sort(0, Qt::DescendingOrder);
     }
 
-    //emit prioritySortChanged();
+    emit prioritySortChanged();
 }
 
 bool TaskFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const

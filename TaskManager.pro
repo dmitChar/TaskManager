@@ -29,6 +29,7 @@ HEADERS += \
     taskmodel.h
 
 DISTFILES += \
+    AddTaskDialog.qml \
     Board.qml \
     BoardColumn.qml \
     StatsBar.qml \

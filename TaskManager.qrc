@@ -6,5 +6,6 @@
         <file>StatsBar.qml</file>
         <file>TaskCard.qml</file>
         <file>Board.qml</file>
+        <file>AddTaskDialog.qml</file>
     </qresource>
 </RCC>

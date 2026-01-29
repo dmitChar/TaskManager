@@ -6,7 +6,6 @@ Rectangle {
     height: 50
     color: "#34495e"
 
-
     RowLayout {
         anchors.fill: parent
         anchors.margins: 10
@@ -15,18 +14,20 @@ Rectangle {
         Label {
             text: "Сегодня: " + taskController.todayDone
             color: "white"
-
+            Layout.fillWidth: true
         }
 
         Label {
             text: "За 7 дней: " + taskController.weekDone
             color: "white"
+            Layout.fillWidth: true
         }
 
         Label {
             text: "Среднее время: " +
                   taskController.avgCompletionTime + " ч"
             color: "white"
+            Layout.fillWidth: true
         }
     }
 }

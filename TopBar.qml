@@ -33,6 +33,17 @@ Rectangle
             text: "Экспорт в JSON"
             onClicked: taskController.exportJson()
         }
+
+        Button
+        {
+            text: "Добавить задачу"
+            onClicked: addTaskDialog.open()
+        }
+
+        AddTaskDialog
+        {
+            id: addTaskDialog
+        }
     }
 
 }

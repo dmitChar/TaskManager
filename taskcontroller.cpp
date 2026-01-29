@@ -1,6 +1,6 @@
 #include "taskcontroller.h"
 #include <QFile>
-#include <QTextStream>
+#include <QDir>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -22,6 +22,27 @@ TaskController::TaskController(QObject *parent)
         proxy->setStatus(s);
         m_columns[s] = proxy;
     }
+}
+
+void TaskController::addTask(const QString &title, const QString &description, const QStringList &tags, int priority)
+{
+    static int id = 0;
+    if (title.trimmed().isEmpty())
+        return;
+    Task task;
+    task.id = ++id;
+    task.title = title;
+    task.description = description;
+    task.tags = tags;
+    task.priority = priority;
+    task.createdAt = QDateTime::currentDateTime();
+    task.status = "backlog";
+
+    m_model.addTask(task);
+}
+
+int TaskController::generateId()
+{
 
 }
 
@@ -103,12 +124,49 @@ void TaskController::moveTask(int id, const QString &newStatus)
 
 void TaskController::exportJson()
 {
+    QString filePath = QDir::currentPath() + "/saves";
+    QDir path(filePath);
+
+    if (!path.exists())
+    {
+        if (QDir().mkpath(filePath))
+            qDebug() << "Создана директория для сохранений, путь:" << filePath;
+        else
+        {
+            qDebug() << "Ошибка создания директории для сохранений";
+            return;
+        }
+    }
+    else qDebug() << "Открыт каталог для сохранений";
+
     QJsonArray arr;
     for (const Task &t : m_model.getTasks())
     {
         QJsonObject obj;
         obj["title"] = t.title;
+        obj["description"] = t.description;
+        obj["status"] = t.status;
+        obj["tags"] = QJsonArray::fromStringList(t.tags);
+        obj["priority"] = t.priority;
+        obj["createdAt"] = t.createdAt.toString(Qt::ISODate);
+        obj["finishedAt"] = t.finishedAt.toString(Qt::ISODate);
+
+        arr.append(obj);
     }
+
+    filePath += "/";
+    filePath += "task_" + QDateTime::currentDateTime().toString("dd-MM-yyyy_HH:mm:ss");
+    filePath += ".json";
+    QFile f(filePath);
+
+    if (!f.open(QIODevice::WriteOnly))
+    {
+        qDebug() << "Не удалось открыть файл для записи сохранения";
+        return;
+    }
+    f.write(QJsonDocument(arr).toJson(QJsonDocument::Indented));
+    qDebug() << "Сохранения записаны в файл" << filePath;
+    f.close();
 }
 
 //Статистика

@@ -33,6 +33,9 @@ public:
     //Экспорт
     Q_INVOKABLE void exportJson();
 
+    //Добавление новой задачи
+    Q_INVOKABLE void addTask(const QString &title, const QString &description, const QStringList &tags, int priority);
+
     //Статистика
     int todayDone() const;
     int weekDone() const;
@@ -47,6 +50,7 @@ private:
 
     //Вспомогательный метод для конвертации индексов
     int proxyToSourceIndex(TaskFilter* filter, int proxyIndex);
+    int generateId();
 
 signals:
     void statsChanged();
