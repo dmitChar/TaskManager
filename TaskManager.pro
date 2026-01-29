@@ -1,6 +1,7 @@
 QT += quick sql
 
 SOURCES += \
+        dbmanager.cpp \
         main.cpp \
         taskcontroller.cpp \
         taskfilter.cpp \
@@ -23,6 +24,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    dbmanager.h \
     task.h \
     taskcontroller.h \
     taskfilter.h \
