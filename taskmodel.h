@@ -5,6 +5,7 @@
 #include <QAbstractListModel>
 
 #include "task.h"
+#include "dbmanager.h"
 
 class TaskModel : public QAbstractListModel
 {
@@ -27,11 +28,13 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     void addTask(const Task &newTask);
-    void moveTask(int id, const QString &newStatus, int sourceTargetIndex);
+    void moveTask(int id, const QString &newStatus, int indexToPlace);
 
     const QList<Task> &getTasks() const;
 private:
     QList<Task> tasks;
+
+    QList<Task> loadFromDatabase();
 signals:
 };
 

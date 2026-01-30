@@ -8,11 +8,11 @@
 TaskController::TaskController(QObject *parent)
     : QObject{parent}
 {
-    m_model.addTask({1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
-    m_model.addTask({2, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
-    m_model.addTask({3, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
-    m_model.addTask({4, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
-    m_model.addTask({5, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
+    m_model.addTask({-1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
+    m_model.addTask({-1, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
+    m_model.addTask({-1, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
+    m_model.addTask({-1, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
+    m_model.addTask({-1, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
 
     //Фильтры для каждого статуса
     for (const QString &s: {"backlog","progress","review", "done"})
@@ -26,25 +26,18 @@ TaskController::TaskController(QObject *parent)
 
 void TaskController::addTask(const QString &title, const QString &description, const QStringList &tags, int priority)
 {
-    static int id = 0;
     if (title.trimmed().isEmpty())
         return;
     Task task;
-    task.id = ++id;
+    task.id = -1;
     task.title = title;
     task.description = description;
     task.tags = tags;
     task.priority = priority;
     task.createdAt = QDateTime::currentDateTime();
     task.status = "backlog";
-    qDebug() << "Добавлена задача" << id;
 
     m_model.addTask(task);
-}
-
-int TaskController::generateId()
-{
-
 }
 
 void TaskController::setPrioritySort(const QString &status, int sortOrder)
@@ -118,7 +111,6 @@ void TaskController::moveTask(int id, const QString &newStatus)
         qDebug() << "Will insert at beginning (proxy 0 = source" << sourceTargetIndex << ")";
     }
 
-    // Вызываем метод модели
     m_model.moveTask(id, newStatus, sourceTargetIndex);
     emit statsChanged();
 }

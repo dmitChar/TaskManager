@@ -50,7 +50,6 @@ private:
 
     //Вспомогательный метод для конвертации индексов
     int proxyToSourceIndex(TaskFilter* filter, int proxyIndex);
-    int generateId();
 
 signals:
     void statsChanged();

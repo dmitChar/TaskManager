@@ -3,7 +3,16 @@
 TaskModel::TaskModel(QObject *parent)
     : QAbstractListModel{parent}
 {
+    DbManager::instance().initialize();
+    tasks = loadFromDatabase();
+}
 
+QList<Task> TaskModel::loadFromDatabase()
+{
+    beginResetModel();
+    QList<Task> t = DbManager::instance().getAllTasks();
+    endResetModel();
+    return t;
 }
 
 int TaskModel::rowCount(const QModelIndex &) const
@@ -50,9 +59,15 @@ QHash<int, QByteArray> TaskModel::roleNames() const
 
 void TaskModel::addTask(const Task &newTask)
 {
-    beginInsertRows({}, tasks.size(), tasks.size());
-    tasks.append(newTask);
-    endInsertRows();
+    Task task = newTask;
+    task.id = DbManager::instance().addTask(task);
+    qDebug() << "id = " << task.id;
+    if (task.id != -1)
+    {
+        beginInsertRows({}, tasks.size(), tasks.size());
+        tasks.append(task);
+        endInsertRows();
+    }
 }
 
 // void TaskModel::moveTask(int id, const QString &newStatus, int targetIndex)
@@ -72,51 +87,46 @@ void TaskModel::addTask(const Task &newTask)
 //     }
 // }
 
-void TaskModel::moveTask(int id, const QString &newStatus, int sourceTargetIndex)
+void TaskModel::moveTask(int id, const QString &newStatus, int indexToPlace)
 {
-    qDebug() << "TaskModel::moveTask: id=" << id << "newStatus=" << newStatus
-             << "sourceTargetIndex=" << sourceTargetIndex;
+    qDebug() << "TaskModel::moveTask: id=" << id << "newStatus=" << newStatus << "indexToPlace=" << indexToPlace;
 
     // Находим задачу
-    int currentSourceIndex = -1;
+    int currentIndexInModel = -1;
     for (int i = 0; i < tasks.size(); ++i) {
         if (tasks[i].id == id) {
-            currentSourceIndex = i;
+            currentIndexInModel = i;
             break;
         }
     }
 
-    if (currentSourceIndex == -1) {
+    if (currentIndexInModel == -1) {
         qWarning() << "Task not found:" << id;
         return;
     }
 
-    QString oldStatus = tasks[currentSourceIndex].status;
+    QString oldStatus = tasks[currentIndexInModel].status;
 
-    qDebug() << "Found task at index" << currentSourceIndex
-             << "with status" << oldStatus;
+    qDebug() << "Found task at index" << currentIndexInModel << "with status" << oldStatus;
 
-
-
-    // Используем beginResetModel для гарантированного обновления
     beginResetModel();
-
     // Обновляем статус
-    tasks[currentSourceIndex].status = newStatus;
+    tasks[currentIndexInModel].status = newStatus;
     if (newStatus == "done" && oldStatus != "done") {
-        tasks[currentSourceIndex].finishedAt = QDateTime::currentDateTime();
+        tasks[currentIndexInModel].finishedAt = QDateTime::currentDateTime();
     }
 
     // Извлекаем задачу
-    Task temp = tasks.takeAt(currentSourceIndex);
-
+    Task temp = tasks.takeAt(currentIndexInModel);
     // Находим позицию для вставки в начало группы задач с новым статусом
     int insertIndex = 0;
 
-    if (sourceTargetIndex >= 0) {
+    if (indexToPlace >= 0) {
         // Если указан конкретный индекс, используем его
-        insertIndex = sourceTargetIndex;
-    } else {
+        insertIndex = indexToPlace;
+    }
+    else
+    {
         // Иначе ищем первую задачу с таким же статусом
         for (int i = 0; i < tasks.size(); ++i) {
             if (tasks[i].status == newStatus) {
@@ -124,7 +134,6 @@ void TaskModel::moveTask(int id, const QString &newStatus, int sourceTargetIndex
                 break;
             }
         }
-
         // Если задач с таким статусом нет, ищем правильное место по порядку статусов
         if (insertIndex == 0) {
             QStringList statusOrder = {"backlog", "progress", "review", "done"};
@@ -143,18 +152,15 @@ void TaskModel::moveTask(int id, const QString &newStatus, int sourceTargetIndex
 
     // Вставляем задачу
     tasks.insert(insertIndex, temp);
-
     endResetModel();
 
-    qDebug() << "Task moved from index" << currentSourceIndex
-             << "to index" << insertIndex << "(top of" << newStatus << "group)";
+    DbManager::instance().updateTask(temp);
 
+    qDebug() << "Task moved from index" << currentIndexInModel << "to index" << insertIndex << "(top of" << newStatus << "group)" << "description:" << temp.description;
     // Выводим текущий порядок для отладки
     qDebug() << "Current tasks order:";
-    for (int i = 0; i < qMin(10, tasks.size()); ++i) {
-        qDebug() << "  " << i << ":" << tasks[i].id << "-"
-                 << tasks[i].title << "(" << tasks[i].status << ")";
-    }
+    for (int i = 0; i < qMin(10, tasks.size()); ++i)
+        qDebug() << "  " << i << ":" << tasks[i].id << "-" << tasks[i].title << "(" << tasks[i].status << ")";
 }
 
 

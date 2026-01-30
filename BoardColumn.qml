@@ -87,12 +87,14 @@ Rectangle {
             }
         }
 
-        ListView {
+
+        ListView
+        {
             id: listView
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 6
-            clip: false
+            clip: true
             model: taskController.modelForStatus(status)
             delegate: TaskCard {}
 
