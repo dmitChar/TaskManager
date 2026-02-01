@@ -7,5 +7,6 @@
         <file>TaskCard.qml</file>
         <file>Board.qml</file>
         <file>AddTaskDialog.qml</file>
+        <file>EditWindow.qml</file>
     </qresource>
 </RCC>

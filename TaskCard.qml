@@ -2,7 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Rectangle {
+Rectangle
+{
     id: card
     width: ListView.view ? ListView.view.width : 200
     height: 150
@@ -11,8 +12,14 @@ Rectangle {
     border.color: dragArea.drag.active ? "#3498db" : "#e0e0e0"
     border.width: dragArea.drag.active ? 2 : 1
 
-    property string dragTaskId: model.id
-    property string dragFromStatus: model.status
+    property string dragTaskId
+    property string dragFromStatus
+    property string title
+    property string description
+    property int priority
+    property var tags
+
+    signal editRequested(int taskId)
 
     Drag.active: dragArea.drag.active
     Drag.hotSpot.x: width / 2
@@ -172,12 +179,17 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         preventStealing: true
+        acceptedButtons: Qt.LeftButton
 
         onEntered: {
             if (!drag.active) {
                 card.border.color = "#bdc3c7"
                 cursorShape = Qt.OpenHandCursor
             }
+        }
+        onDoubleClicked:
+        {
+            card.editRequested(model.id)
         }
 
         onExited: {

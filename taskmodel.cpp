@@ -70,22 +70,47 @@ void TaskModel::addTask(const Task &newTask)
     }
 }
 
-// void TaskModel::moveTask(int id, const QString &newStatus, int targetIndex)
-// {
-//     for (int i = 0; i < tasks.size(); ++i)
-//     {
-//         if (tasks[i].id == id)
-//         {
-//             tasks[i].status = newStatus;
-//             if (newStatus == "done")
-//             {
-//                 tasks[i].finishedAt = QDateTime::currentDateTime();
-//             }
-//             emit dataChanged(index(i), index(i));
-//             return;
-//         }
-//     }
-// }
+void TaskModel::updateTask(int id, const QString &title, const QString &description, const QStringList &tags, int priority)
+{
+    qDebug() << "TaskModel::updateTask called for ID:" << id;
+    qDebug() << "  title:" << title;
+    qDebug() << "  description:" << description;
+    qDebug() << "  tags:" << tags;
+    qDebug() << "  priority:" << priority;
+
+    int taskIndex = -1;
+    for (size_t i = 0; i < tasks.size(); ++i)
+    {
+        if (tasks[i].id == id)
+        {
+            taskIndex = i;
+            break;
+        }
+    }
+
+    if (taskIndex == -1)
+    {
+        qWarning() << "Task not found in model with ID:" << id;
+        return;
+    }
+
+    tasks[taskIndex].title = title;
+    tasks[taskIndex].description = description;
+    tasks[taskIndex].tags = tags;
+    tasks[taskIndex].priority = priority;
+
+    // Обновляем в БД
+    if (!DbManager::instance().updateTask(tasks[taskIndex]))
+    {
+        qWarning() << "Failed to update task in database";
+        return;
+    }
+
+    QModelIndex changedIndex = index(taskIndex);
+    emit dataChanged(changedIndex, changedIndex, QVector<int>() << TitleRole << DescriptionRole << TagsRole << PriorityRole);
+
+    qDebug() << "Task updated successfully in model and database";
+}
 
 void TaskModel::moveTask(int id, const QString &newStatus, int indexToPlace)
 {
@@ -109,15 +134,17 @@ void TaskModel::moveTask(int id, const QString &newStatus, int indexToPlace)
 
     qDebug() << "Found task at index" << currentIndexInModel << "with status" << oldStatus;
 
-    beginResetModel();
+    beginRemoveRows({}, currentIndexInModel, currentIndexInModel);
+
     // Обновляем статус
     tasks[currentIndexInModel].status = newStatus;
     if (newStatus == "done" && oldStatus != "done") {
         tasks[currentIndexInModel].finishedAt = QDateTime::currentDateTime();
     }
-
     // Извлекаем задачу
     Task temp = tasks.takeAt(currentIndexInModel);
+    endRemoveRows();
+
     // Находим позицию для вставки в начало группы задач с новым статусом
     int insertIndex = 0;
 
@@ -150,9 +177,10 @@ void TaskModel::moveTask(int id, const QString &newStatus, int indexToPlace)
         }
     }
 
+    beginInsertRows({}, insertIndex, insertIndex);
     // Вставляем задачу
     tasks.insert(insertIndex, temp);
-    endResetModel();
+    endInsertRows();
 
     DbManager::instance().updateTask(temp);
 

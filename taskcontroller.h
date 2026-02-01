@@ -35,6 +35,11 @@ public:
 
     //Добавление новой задачи
     Q_INVOKABLE void addTask(const QString &title, const QString &description, const QStringList &tags, int priority);
+    //Обновление задачи
+    Q_INVOKABLE void updateTask(int id, const QString &status, const QString &title, const QString &description, const QStringList &tags, int priority);
+
+    //Получение задачи по id
+    Q_INVOKABLE QVariantMap getTask(int id);
 
     //Статистика
     int todayDone() const;

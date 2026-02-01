@@ -24,6 +24,27 @@ TaskController::TaskController(QObject *parent)
     }
 }
 
+QVariantMap TaskController::getTask(int id)
+{
+    QVariantMap taskData{};
+
+    for (const auto & t: m_model.getTasks())
+    {
+        if (t.id == id)
+        {
+            taskData["id"] = t.id;
+            taskData["title"] = t.title;
+            taskData["description"] = t.description;
+            taskData["status"] = t.status;
+            taskData["priority"] = t.priority;
+            taskData["tags"] = t.tags;
+            return taskData;
+        }
+    }
+    qDebug() << "Task was not found by id:" << id;
+    return taskData;
+}
+
 void TaskController::addTask(const QString &title, const QString &description, const QStringList &tags, int priority)
 {
     if (title.trimmed().isEmpty())
@@ -38,6 +59,26 @@ void TaskController::addTask(const QString &title, const QString &description, c
     task.status = "backlog";
 
     m_model.addTask(task);
+}
+
+void TaskController::updateTask(int id,const QString &status, const QString &title, const QString &description, const QStringList &tags, int priority)
+{
+    qDebug() << "TaskController::updateTask:";
+    qDebug() << "  proxyIndex:" << id;
+    qDebug() << "  status:" << status;
+
+    TaskFilter* filter = m_columns.value(status);
+    if (!filter)
+    {
+        qWarning() << "Filter not found for status:" << status;
+        return;
+    }
+
+    QModelIndex proxyIndx = filter->index(id, 0);
+    int taskId = filter->data(proxyIndx, TaskModel::IdRole).toInt();
+    qDebug() << "  Converted proxyIndex" << id << "to taskId:" << taskId;
+
+    m_model.updateTask(id, title, description, tags, priority);
 }
 
 void TaskController::setPrioritySort(const QString &status, int sortOrder)
@@ -108,7 +149,7 @@ void TaskController::moveTask(int id, const QString &newStatus)
     if (targetFilter && targetFilter->rowCount() > 0) {
         // Конвертируем proxy индекс 0 в source индекс
         sourceTargetIndex = proxyToSourceIndex(targetFilter, 0);
-        qDebug() << "Will insert at beginning (proxy 0 = source" << sourceTargetIndex << ")";
+        qDebug() << "Will insert at beginning (" << sourceTargetIndex << ")";
     }
 
     m_model.moveTask(id, newStatus, sourceTargetIndex);

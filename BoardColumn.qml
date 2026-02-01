@@ -18,6 +18,11 @@ Rectangle {
         ColorAnimation { duration: 200 }
     }
 
+    //Окно редактирования задачи
+    EditWindow {
+        id: editWindow
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 8
@@ -96,7 +101,20 @@ Rectangle {
             spacing: 6
             clip: true
             model: taskController.modelForStatus(status)
-            delegate: TaskCard {}
+            delegate: TaskCard
+            {
+                dragTaskId: model.id
+                dragFromStatus: model.status
+                title: model.title
+                description: model.description
+                priority: model.priority
+                tags: model.tags
+
+                onEditRequested: function(id)
+                {
+                    editWindow.openEditWindow(model.id, dragFromStatus)
+                }
+            }
 
             add: Transition {
                 NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200 }

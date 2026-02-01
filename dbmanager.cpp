@@ -179,7 +179,7 @@ bool DbManager::updateTask(const Task &task)
 {
     QSqlQuery query(m_db);
     query.prepare(R"(
-        UPDATE tasks SET
+        UPDATE OR IGNORE tasks SET
         title = :title,
         description = :description,
         status = :status,
@@ -188,7 +188,7 @@ bool DbManager::updateTask(const Task &task)
         WHERE id = :id )");
     query.bindValue(":id", task.id);
     query.bindValue(":title", task.title);
-    query.bindValue("description", task.description);
+    query.bindValue(":description", task.description);
     query.bindValue(":status", task.status);
     query.bindValue(":priority", task.priority);
     query.bindValue(":finished_at", task.finishedAt.isValid() ? task.finishedAt : QVariant());
@@ -208,7 +208,6 @@ bool DbManager::updateTask(const Task &task)
         addTagToTask(task.id, tagName);
 
     return true;
-
 }
 
 bool DbManager::deleteTask(int taskId)

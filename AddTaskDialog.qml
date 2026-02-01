@@ -6,11 +6,14 @@ Dialog
 {
     id: dialog
     title: "Add task"
-    modal: true
+    modal: Qt.ApplicationModal
     standardButtons: "NoButton"
     width: 400
+    x: (Screen.width - width) / 2
+    y: (Screen.height - height) / 2
 
     signal taskAccepted(string title, string priority, string description, var tags)
+
 
     ColumnLayout
     {
