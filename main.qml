@@ -21,10 +21,9 @@ Window
         {
             Layout.fillWidth: true
             Layout.fillHeight: true
-
         }
 
-        StatsBar
+        Footer
         {
             Layout.fillWidth: true
         }

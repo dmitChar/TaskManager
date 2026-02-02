@@ -8,5 +8,7 @@
         <file>Board.qml</file>
         <file>AddTaskDialog.qml</file>
         <file>EditWindow.qml</file>
+        <file>DeleteTaskDialog.qml</file>
+        <file>Footer.qml</file>
     </qresource>
 </RCC>

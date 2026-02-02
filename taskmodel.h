@@ -30,6 +30,7 @@ public:
     void addTask(const Task &newTask);
     void moveTask(int id, const QString &newStatus, int indexToPlace);
     void updateTask(int id, const QString &title, const QString &description, const QStringList &tags, int priority);
+    bool deleteTask(int id);
 
     const QList<Task> &getTasks() const;
 private:

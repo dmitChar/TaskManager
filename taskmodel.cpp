@@ -70,6 +70,34 @@ void TaskModel::addTask(const Task &newTask)
     }
 }
 
+bool TaskModel::deleteTask(int id)
+{
+    int taskIndex = -1;
+    for (size_t i = 0; i < tasks.size(); ++i)
+    {
+        if (tasks[i].id == id)
+        {
+            taskIndex = i;
+            break;
+        }
+    }
+    if (taskIndex == -1)
+    {
+        qWarning() << "Task not found in model with ID:" << id;
+        return false;
+    }
+
+    if (!DbManager::instance().deleteTask(id)) {
+        qWarning() << "Failed to delete task from database";
+        return false;
+    }
+    beginRemoveRows({}, taskIndex, taskIndex);
+    tasks.removeAt(taskIndex);
+    endRemoveRows();
+    return true;
+
+}
+
 void TaskModel::updateTask(int id, const QString &title, const QString &description, const QStringList &tags, int priority)
 {
     qDebug() << "TaskModel::updateTask called for ID:" << id;

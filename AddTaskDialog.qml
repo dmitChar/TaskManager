@@ -9,8 +9,10 @@ Dialog
     modal: Qt.ApplicationModal
     standardButtons: "NoButton"
     width: 400
-    x: (Screen.width - width) / 2
-    y: (Screen.height - height) / 2
+
+    parent: Overlay.overlay
+    x: (parent.width - width) / 2
+    y: (parent.height - height) / 2
 
     signal taskAccepted(string title, string priority, string description, var tags)
 

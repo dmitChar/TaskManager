@@ -34,7 +34,9 @@ DISTFILES += \
     AddTaskDialog.qml \
     Board.qml \
     BoardColumn.qml \
+    DeleteTaskDialog.qml \
     EditWindow.qml \
+    Footer.qml \
     StatsBar.qml \
     TaskCard.qml \
     TopBar.qml

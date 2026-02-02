@@ -212,7 +212,17 @@ bool DbManager::updateTask(const Task &task)
 
 bool DbManager::deleteTask(int taskId)
 {
+    QSqlQuery query(m_db);
+    query.prepare(R"(DELETE FROM TASKS WHERE id = :id)");
+    query.bindValue(":id", taskId);
 
+    if (!query.exec()) {
+        qDebug() << "Failed to delete task:" << query.lastError().text();
+        return false;
+    }
+
+    qDebug() << "Task deleted from database, ID:" << taskId;
+    return true;
 }
 
 bool DbManager::deleteTag(int tagId)

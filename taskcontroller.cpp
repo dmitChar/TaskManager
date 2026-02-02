@@ -8,11 +8,11 @@
 TaskController::TaskController(QObject *parent)
     : QObject{parent}
 {
-    m_model.addTask({-1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
-    m_model.addTask({-1, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
-    m_model.addTask({-1, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
-    m_model.addTask({-1, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
-    m_model.addTask({-1, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
+    // m_model.addTask({-1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
+    // m_model.addTask({-1, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
+    // m_model.addTask({-1, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
+    // m_model.addTask({-1, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
+    // m_model.addTask({-1, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
 
     //Фильтры для каждого статуса
     for (const QString &s: {"backlog","progress","review", "done"})
@@ -22,6 +22,15 @@ TaskController::TaskController(QObject *parent)
         proxy->setStatus(s);
         m_columns[s] = proxy;
     }
+}
+
+void TaskController::deleteTaskById(int id)
+{
+    if (!m_model.deleteTask(id))
+        qDebug() << "Ошибка удаления задачи" << id;
+    else
+        qDebug() << "Задача" << id << "была успешно удалена";
+
 }
 
 QVariantMap TaskController::getTask(int id)

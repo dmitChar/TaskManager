@@ -13,10 +13,8 @@ Window
     color: "#eef1f5"
     flags: Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint
 
-    Component.onCompleted: {
-        x = (Screen.width - width) / 2
-        y = (Screen.height - height) / 2
-    }
+    x: Screen.width / 2 - width / 2
+    y: Screen.height / 2 - height / 2
 
     property int taskId
     property string status

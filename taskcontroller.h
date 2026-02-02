@@ -41,6 +41,9 @@ public:
     //Получение задачи по id
     Q_INVOKABLE QVariantMap getTask(int id);
 
+    //Удаление задачи
+    Q_INVOKABLE void deleteTaskById(int id);
+
     //Статистика
     int todayDone() const;
     int weekDone() const;

@@ -51,6 +51,58 @@ Rectangle
         }
     }
 
+    MouseArea
+    {
+        id: dragArea
+        anchors.fill: parent
+        drag.axis: Drag.XAndYAxis
+        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+        preventStealing: true
+        acceptedButtons: Qt.LeftButton
+        z:0
+
+        property bool overButton:
+        {
+            var pos = mapToItem(deleteButton, mouseX, mouseY)
+            return deleteButton.contains(Qt.point(pos.x, pos.y))
+        }
+        drag.target: overButton ? null : card
+
+        onEntered: {
+            if (!drag.active) {
+                card.border.color = "#bdc3c7"
+                cursorShape = Qt.OpenHandCursor
+            }
+        }
+        onDoubleClicked:
+        {
+            if (!overButton)
+                card.editRequested(model.id)
+        }
+
+        onExited: {
+            if (!drag.active) {
+                card.border.color = "#e0e0e0"
+            }
+        }
+
+        onPressed: function(mouse)
+        {
+            if (overButton)
+            {
+                mouse.accepted = false
+                return
+            }
+            cursorShape = Qt.ClosedHandCursor
+        }
+
+        onReleased: {
+            cursorShape = Qt.OpenHandCursor
+            card.Drag.drop()
+        }
+    }
+
     // Полоса приоритета слева
     Rectangle {
         id: priorityBar
@@ -71,6 +123,7 @@ Rectangle
         anchors.margins: 12
         anchors.leftMargin: 20
         spacing: 8
+        z:1
 
         // Заголовок с тегами
         RowLayout {
@@ -89,7 +142,7 @@ Rectangle
                 maximumLineCount: 2
             }
 
-            // Индикатор приоритета (иконка)
+            // Индикатор приоритета
             Rectangle {
                 width: 24
                 height: 24
@@ -138,73 +191,79 @@ Rectangle
             Layout.fillHeight: true
         }
 
+        RowLayout
+        {
         // Теги внизу
-        Flow {
-            Layout.fillWidth: true
-            spacing: 6
-            visible: tags !== undefined && tags.length > 0
+            Flow
+            {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: tags !== undefined && tags.length > 0
 
-            Repeater {
-                model: tags
-                delegate: Rectangle {
-                    height: 22
-                    width: tagText.implicitWidth + 16
-                    radius: 11
+                Repeater {
+                    model: tags
+                    delegate: Rectangle {
+                        height: 22
+                        width: tagText.implicitWidth + 16
+                        radius: 11
 
-                    color: {
-                        if (modelData === "work") return "#3498db"
-                        if (modelData === "study") return "#2ecc71"
-                        if (modelData === "urgent") return "#e74c3c"
-                        return "#95a5a6"
-                    }
+                        color: {
+                            if (modelData === "work") return "#3498db"
+                            if (modelData === "study") return "#2ecc71"
+                            if (modelData === "urgent") return "#e74c3c"
+                            return "#95a5a6"
+                        }
 
-                    Text {
-                        id: tagText
-                        anchors.centerIn: parent
-                        text: modelData
-                        color: "white"
-                        font.pixelSize: 10
-                        font.bold: true
+                        Text {
+                            id: tagText
+                            anchors.centerIn: parent
+                            text: modelData
+                            color: "white"
+                            font.pixelSize: 10
+                            font.bold: true
+                        }
                     }
                 }
             }
+
+            Button
+            {
+                id: deleteButton
+                implicitWidth: 32
+                implicitHeight: 32
+                ToolTip.visible: hovered
+                ToolTip.text: "Delete task"
+                ToolTip.delay: 300
+                z:10
+
+                contentItem: Text
+                {
+                    text: "🗑️"
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+                background: Rectangle
+                {
+                    radius: 16
+                    color: parent.hovered ? "#e74c3c" : "#ecf0f1"
+
+                    Behavior on color
+                    {
+                        ColorAnimation { duration: 150}
+                    }
+                }
+                onClicked:
+                {
+                    console.log("Delete task with id = ", dragTaskId)
+                    deleteTaskDialog.taskIdToDelete = dragTaskId
+                    deleteTaskDialog.titleToDelete = title
+                    deleteTaskDialog.open()
+                }
+
+            }
         }
     }
 
-    MouseArea {
-        id: dragArea
-        anchors.fill: parent
-        drag.target: card
-        drag.axis: Drag.XAndYAxis
-        cursorShape: Qt.PointingHandCursor
-        hoverEnabled: true
-        preventStealing: true
-        acceptedButtons: Qt.LeftButton
 
-        onEntered: {
-            if (!drag.active) {
-                card.border.color = "#bdc3c7"
-                cursorShape = Qt.OpenHandCursor
-            }
-        }
-        onDoubleClicked:
-        {
-            card.editRequested(model.id)
-        }
-
-        onExited: {
-            if (!drag.active) {
-                card.border.color = "#e0e0e0"
-            }
-        }
-
-        onPressed: {
-            cursorShape = Qt.ClosedHandCursor
-        }
-
-        onReleased: {
-            cursorShape = Qt.OpenHandCursor
-            card.Drag.drop()
-        }
-    }
 }

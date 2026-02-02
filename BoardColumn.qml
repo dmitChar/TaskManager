@@ -22,6 +22,14 @@ Rectangle {
     EditWindow {
         id: editWindow
     }
+    DeleteTaskDialog
+    {
+        id: deleteTaskDialog
+        onDeleteTask: function (id)
+        {
+            taskController.deleteTaskById(id)
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
