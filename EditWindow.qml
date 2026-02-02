@@ -100,14 +100,14 @@ Window
                     contentItem: Text {
                         text: "✕"
                         font.pixelSize: 16
-                        color: "#7f8c8d"
+                        color: "black"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
                     background: Rectangle {
                         radius: 16
-                        color: parent.hovered ? "#ecf0f1" : "transparent"
+                        color: parent.hovered ? "#C0C0C0" : "transparent"
 
                         Behavior on color {
                             ColorAnimation { duration: 150 }
@@ -219,7 +219,7 @@ Window
                         border.width: priorityBox.activeFocus ? 2 : 1
 
                         Behavior on border.color {
-                            ColorAnimation { duration: 150 }
+                            ColorAnimation { duration: 200 }
                         }
                     }
 
@@ -241,7 +241,7 @@ Window
                             color: highlighted ? "#ecf0f1" : "transparent"
 
                             Behavior on color {
-                                ColorAnimation { duration: 100 }
+                                ColorAnimation { duration: 200 }
                             }
                         }
 

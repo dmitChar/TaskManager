@@ -11,23 +11,15 @@ Window
     visible: true
     title: "Task Manager"
 
-    ColumnLayout
-    {
-        anchors.fill: parent
-        spacing: 8
-
-        TopBar {}
         Board
         {
+            anchors.fill: parent
             Layout.fillWidth: true
             Layout.fillHeight: true
         }
 
-        Footer
-        {
-            Layout.fillWidth: true
-        }
 
-    }
+
+
 
 }
