@@ -37,6 +37,8 @@ DISTFILES += \
     DeleteTaskDialog.qml \
     EditWindow.qml \
     Footer.qml \
+    MenuButton.qml \
+    Statistics.qml \
     StatsBar.qml \
     TaskCard.qml \
     TopBar.qml

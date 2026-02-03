@@ -4,14 +4,14 @@ import QtQuick.Layouts
 
 Rectangle
 {
-    height: 60
+    implicitHeight: 40
     color: "#2c3e50"
     Layout.fillWidth: true
 
     RowLayout
     {
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: 0
         spacing: 10
 
         TextField

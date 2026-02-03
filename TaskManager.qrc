@@ -10,5 +10,12 @@
         <file>EditWindow.qml</file>
         <file>DeleteTaskDialog.qml</file>
         <file>Footer.qml</file>
+        <file>MenuButton.qml</file>
+        <file>Statistics.qml</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>icons/chart-histogram.png</file>
+        <file>icons/edit.png</file>
+        <file>icons/menu-burger.png</file>
     </qresource>
 </RCC>
