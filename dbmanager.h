@@ -33,6 +33,8 @@ public:
 
     QList<Task> getTasksByStatus(const QString& status);
 
+    QVariantList getCountTasks(const QString &grorupFormat, const QDateTime &from, const QDateTime &to);
+
 private:
     DbManager();
     ~DbManager();

@@ -44,7 +44,6 @@ ApplicationWindow
                 }
                 Button
                 {
-
                     icon.source: "qrc:/icons/icons/menu-burger.png"
                     font.pixelSize: 20
                     background: Rectangle {color: "transparent"}
@@ -61,7 +60,7 @@ ApplicationWindow
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-            model:
+                model:
                 [
                     {iconQrc: "qrc:/icons/icons/edit.png", name: "Board"},
                     {iconQrc: "qrc:/icons/icons/chart-histogram.png", name: "Statistics"}
@@ -71,6 +70,7 @@ ApplicationWindow
                 {
                     iconSource: modelData.iconQrc
                     name: modelData.name
+                    Layout.fillWidth:true
                     onClicked:
                     {
                         pageName = modelData.name

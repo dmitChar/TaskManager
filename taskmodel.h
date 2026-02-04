@@ -31,6 +31,7 @@ public:
     void moveTask(int id, const QString &newStatus, int indexToPlace);
     void updateTask(int id, const QString &title, const QString &description, const QStringList &tags, int priority);
     bool deleteTask(int id);
+    QVariantList getCountTasks(QDateTime from);
 
     const QList<Task> &getTasks() const;
 private:

@@ -4,15 +4,24 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QDateTime>
 
 TaskController::TaskController(QObject *parent)
     : QObject{parent}
 {
-    // m_model.addTask({-1, "Учить Qt", "QML + C++", "backlog", {"study"}, 1, QDateTime::currentDateTime(), {}});
-    // m_model.addTask({-1, "Проект", "Kanban app", "progress", {"work", "urgent"}, 2, QDateTime::currentDateTime(), {}});
-    // m_model.addTask({-1, "Дизайн", "UI/UX", "progress", {"work"}, 3, QDateTime::currentDateTime(), {}});
-    // m_model.addTask({-1, "Test", "Testing app", "done", {"work", "urgent", "study"}, 3, QDateTime::currentDateTime(), QDateTime::currentDateTime()});
-    // m_model.addTask({-1, "Документация", "Написать README", "backlog", {"work"}, 2, QDateTime::currentDateTime(), {}});
+
+    m_model.addTask({-1, "Изучить QML basics", "Прочитать доки", "done", {"study"}, 2, QDateTime(QDate(2026,1,20), QTime(10,0)), QDateTime(QDate(2026,1,22), QTime(15,30)) });
+    m_model.addTask({-1, "Сделать прототип доски", "Kanban layout", "done", {"work", "urgent"}, 1, QDateTime(QDate(2026,1,25), QTime(9,0)),  QDateTime(QDate(2026,1,28), QTime(18,0))  });
+    m_model.addTask({-1, "Тестирование drag&drop", "Проверить перемещение", "done", {"work", "study"},2,QDateTime(QDate(2026,1,30), QTime(14,0)), QDateTime(QDate(2026,2,1),  QTime(11,45)) });
+    m_model.addTask({-1, "Добавить статистику", "Графики в QML","done", {"work"},1, QDateTime(QDate(2026,2,2),  QTime(8,30)),  QDateTime(QDate(2026,2,3),  QTime(16,20)) });
+    m_model.addTask({-1, "Рефакторинг модели задач","Оптимизация TaskModel","done", {"study"},3, QDateTime(QDate(2026,2,5), QTime(10,0)),  QDateTime(QDate(2026,2,6),  QTime(14,10)) });
+
+    m_model.addTask({-1, "Добавить авторизацию","Логин/регистрация","progress", {"work", "urgent"}, 1, QDateTime(QDate(2026,2,1), QTime(9,0)),  {}});
+    m_model.addTask({-1, "Написать README", "Документация проекта", "backlog",  {"work"},2, QDateTime(QDate(2026,2,3), QTime(11,0)), {}});
+    m_model.addTask({-1, "Тёмная тема", "Поддержка dark mode","progress", {"study"},3, QDateTime(QDate(2026,2,4), QTime(13,0)), {}});
+    m_model.addTask({-1, "Экспорт в CSV/JSON","Сохранение отчётов", "backlog",  {"work"},2, QDateTime(QDate(2026,2,5), QTime(15,0)), {}});
+
+    m_model.addTask({-1, "Первая версия прототипа", "MVP Kanban","done", {"work"},1, QDateTime(QDate(2025,12,10), QTime(9,0)), QDateTime(QDate(2025,12,15), QTime(17,0)) });
 
     //Фильтры для каждого статуса
     for (const QString &s: {"backlog","progress","review", "done"})
@@ -33,7 +42,7 @@ void TaskController::deleteTaskById(int id)
 
 }
 
-QVariantMap TaskController::getTask(int id)
+QVariantMap TaskController::getTask(int id) const
 {
     QVariantMap taskData{};
 
@@ -213,49 +222,35 @@ void TaskController::exportJson()
 }
 
 //Статистика
-//За сегодня
-int TaskController::todayDone() const
+QVariantList TaskController::getCompletedTasks(Period period) const
 {
-    int count = 0;
-    QDate today = QDate::currentDate();
+    qDebug() << "start of getCompltasks";
+    QDateTime from = QDateTime(QDate::currentDate(), QTime(0, 0, 0));
+    QDateTime to = QDateTime::currentDateTime();
+    QString format;
 
-    for (const Task &t : m_model.getTasks())
+    switch (period)
     {
-        if (t.status == "done" && t.finishedAt.date() == today)
-            ++count;
-    }
-    return count;
-}
+    case Period::Today:
+        format = "%H";
+        break;
 
-//За неделю
-int TaskController::weekDone() const
-{
-    int count = 0;
-    QDateTime weekAgo = QDateTime::currentDateTime().addDays(-7);
+    case Period::Week:
+        from = from.addDays(-7);
+        format = "%d-%m";
+        break;
 
-    for (const Task &t : m_model.getTasks())
-    {
-        if (t.status == "done" && t.finishedAt.isValid() && t.finishedAt >= weekAgo)
-            ++count;
-    }
-    return count;
-}
+    case Period::Month:
+        from = QDateTime(QDate(to.date().year(), to.date().month(), 1), QTime(0, 0, 0));
+        format = "%d-%m";
+        break;
 
-//Ср время выполенения
-double TaskController::avgComplTime() const
-{
-    qint64 totalSecs = 0;
-    int doneCount = 0;
-
-    for (const Task &t : m_model.getTasks())
-    {
-        if (t.status == "done" && t.finishedAt.isValid())
-        {
-            totalSecs += t.createdAt.secsTo(t.createdAt);
-            ++doneCount;
-        }
+    case Period::Year:
+        from = QDateTime(QDate(to.date().year(), 1, 1), QTime(0, 0, 0));
+        format = "%m";
+        break;
     }
 
-    if (doneCount == 0) return 0.0;
-    return totalSecs / doneCount / 3600; // возвращаем время в часах
+    return DbManager::instance().getCountTasks(format, from, to);
 }
+

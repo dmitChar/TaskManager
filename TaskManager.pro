@@ -1,4 +1,4 @@
-QT += quick sql
+QT += quick sql charts
 
 SOURCES += \
         dbmanager.cpp \

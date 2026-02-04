@@ -5,14 +5,25 @@
 
 #include "taskmodel.h"
 #include "taskfilter.h"
+#include "dbmanager.h"
 
 class TaskController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int todayDone READ todayDone NOTIFY statsChanged)
-    Q_PROPERTY(int weekDone READ weekDone NOTIFY statsChanged)
-    Q_PROPERTY(int avgComplTime READ avgComplTime NOTIFY statsChanged)
+    // Q_PROPERTY(int todayDone READ todayDone NOTIFY statsChanged)
+    // Q_PROPERTY(int weekDone READ weekDone NOTIFY statsChanged)
+    // Q_PROPERTY(int avgComplTime READ avgComplTime NOTIFY statsChanged)
+
+
 public:
+    enum Period
+    {
+        Today,
+        Week,
+        Month,
+        Year
+    };
+    Q_ENUM(Period)
     explicit TaskController(QObject *parent = nullptr);
 
     //Получение модели для стутуса
@@ -39,15 +50,13 @@ public:
     Q_INVOKABLE void updateTask(int id, const QString &status, const QString &title, const QString &description, const QStringList &tags, int priority);
 
     //Получение задачи по id
-    Q_INVOKABLE QVariantMap getTask(int id);
+    Q_INVOKABLE QVariantMap getTask(int id) const;
 
     //Удаление задачи
     Q_INVOKABLE void deleteTaskById(int id);
 
     //Статистика
-    int todayDone() const;
-    int weekDone() const;
-    double avgComplTime() const;
+    Q_INVOKABLE QVariantList getCompletedTasks(Period period) const;
 
 private:
     TaskModel m_model;

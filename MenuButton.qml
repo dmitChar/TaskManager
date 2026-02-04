@@ -8,24 +8,30 @@ Button
     property string iconSource
     property string name
 
-    Layout.fillWidth: true
-    implicitHeight: 44
+    implicitHeight: 46
+    width: parent.width
 
-    background: Rectangle {
+    background: Rectangle
+    {
         radius: 8
         color: hovered ? "#34495e" : "transparent"
     }
 
-    contentItem: Row {
+    contentItem: Row
+    {
+        anchors.centerIn: parent
         spacing: 12
-
-        Image {
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
+        Image
+        {
             source: iconSource
             width: 24
             height: 24
         }
 
-        Text {
+        Text
+        {
             text: name
             font.pixelSize: 15
             color: "white"

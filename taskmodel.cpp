@@ -224,3 +224,10 @@ const QList<Task> &TaskModel::getTasks() const
 {
     return tasks;
 }
+
+
+//Статистика
+QVariantList TaskModel::getCountTasks(QDateTime from)
+{
+    QDateTime to = QDateTime::currentDateTime();
+}

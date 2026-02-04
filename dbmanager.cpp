@@ -280,7 +280,6 @@ Task DbManager::getTask(int taskId)
 
 }
 
-
 QList<Task> DbManager::getAllTasks()
 {
     QList<Task> tasks;
@@ -361,4 +360,37 @@ QList<Task> DbManager::getTasksByStatus(const QString& status)
     }
 
     return tasks;
+}
+
+
+//Статистика
+//Количество выполненных заданий за период
+QVariantList DbManager::getCountTasks(const QString &groupFormat, const QDateTime &from, const QDateTime &to)
+{
+    QVariantList result;
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT strftime(:groupFormat, finished_at) AS label, COUNT(*) AS value
+        FROM tasks WHERE finished_at BETWEEN :from AND :to
+        GROUP BY label
+        ORDER BY MIN(finished_at)
+    )");
+    query.bindValue(":groupFormat", groupFormat);
+    query.bindValue(":from", from);
+    query.bindValue(":to", to);
+    if (query.exec())
+    {
+        while (query.next())
+        {
+            QVariantMap point;
+            point["label"] = query.value("label").toString();
+            point["value"] = query.value("value").toInt();
+            result.append(point);
+        }
+    }
+    else
+    {
+        qDebug() << "Ошибка в SELECT count tasks:" << query.lastError().text();
+    }
+    return result;
 }
