@@ -364,8 +364,40 @@ QList<Task> DbManager::getTasksByStatus(const QString& status)
 
 
 //Статистика
+//Количество заданий по тегам
+QVariantList DbManager::getTagsCount(QDateTime from) const
+{
+    QVariantList result;
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT tags.name AS name, COUNT(*) AS count
+        FROM task_tags
+        JOIN tags ON tags.id = task_tags.tag_id
+        JOIN tasks ON tasks.id = task_tags.task_id
+        WHERE tasks.created_at >= :from
+        GROUP BY tags.name
+    )");
+
+    query.bindValue(":from", from);
+    if (query.exec())
+    {
+        while (query.next())
+        {
+            QVariantMap map;
+            map["tag_name"] = query.value("name").toString();
+            map["count"] = query.value("count").toInt();
+            result.append(map);
+        }
+    }
+    else
+    {
+        qDebug() << "Ошибка в SELECT tagsCount:" << query.lastError().text();
+    }
+    return result;
+}
+
 //Количество выполненных заданий за период
-QVariantList DbManager::getCountTasks(const QString &groupFormat, const QDateTime &from, const QDateTime &to)
+QVariantList DbManager::getCountTasks(const QString &groupFormat, const QDateTime &from, const QDateTime &to) const
 {
     QVariantList result;
     QSqlQuery query(m_db);

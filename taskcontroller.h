@@ -57,6 +57,7 @@ public:
 
     //Статистика
     Q_INVOKABLE QVariantList getCompletedTasks(Period period) const;
+    Q_INVOKABLE QVariantList getTagsCount(Period period) const;
 
 private:
     TaskModel m_model;

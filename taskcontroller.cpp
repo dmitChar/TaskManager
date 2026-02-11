@@ -39,8 +39,8 @@ void TaskController::deleteTaskById(int id)
         qDebug() << "Ошибка удаления задачи" << id;
     else
         qDebug() << "Задача" << id << "была успешно удалена";
-
 }
+
 
 QVariantMap TaskController::getTask(int id) const
 {
@@ -252,5 +252,32 @@ QVariantList TaskController::getCompletedTasks(Period period) const
     }
 
     return DbManager::instance().getCountTasks(format, from, to);
+}
+
+QVariantList TaskController::getTagsCount(Period period) const
+{
+    qDebug() << "Start of getTagsCount";
+    QDateTime from = QDateTime(QDate::currentDate(), QTime(0, 0, 0));
+    QDateTime to = QDateTime::currentDateTime();
+
+    switch (period)
+    {
+    case Period::Today:
+        break;
+
+    case Period::Week:
+        from = from.addDays(-7);
+        break;
+
+    case Period::Month:
+        from = QDateTime(QDate(to.date().year(), to.date().month(), 1), QTime(0, 0, 0));
+        break;
+
+    case Period::Year:
+        from = QDateTime(QDate(to.date().year(), 1, 1), QTime(0, 0, 0));
+        break;
+    }
+
+        return DbManager::instance().getTagsCount(from);
 }
 

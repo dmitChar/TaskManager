@@ -33,7 +33,8 @@ public:
 
     QList<Task> getTasksByStatus(const QString& status);
 
-    QVariantList getCountTasks(const QString &grorupFormat, const QDateTime &from, const QDateTime &to);
+    QVariantList getCountTasks(const QString &grorupFormat, const QDateTime &from, const QDateTime &to) const;
+    QVariantList getTagsCount(QDateTime from) const;
 
 private:
     DbManager();
